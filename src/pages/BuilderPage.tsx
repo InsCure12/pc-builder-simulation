@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { PCBuild, Component } from "../types";
 import { componentData } from "../data/components";
 import { ComponentSelector } from "../components/ComponentSelector";
@@ -6,6 +6,8 @@ import TextType from "../components/TextType";
 import ScrollVelocity from "../components/ScrollVelocity";
 
 export const BuilderPage = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const [build, setBuild] = useState<PCBuild>({
     cpu: null,
     gpu: null,
@@ -102,7 +104,13 @@ export const BuilderPage = () => {
       </section>
 
       <section className="brands-section">
-        <ScrollVelocity velocity={50} className="brand-scroll">
+        <ScrollVelocity 
+          velocity={50} 
+          className="brand-scroll"
+          scrollContainerRef={scrollContainerRef}
+          parallaxStyle={{}}
+          scrollerStyle={{}}
+        >
           {[
             { src: "/images/brands/intel-logo.png", alt: "Intel" },
             { src: "/images/brands/amd-logo.png", alt: "AMD" },

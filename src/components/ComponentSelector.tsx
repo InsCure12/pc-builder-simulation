@@ -19,6 +19,7 @@ export const ComponentSelector = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredComponents = components.filter((component) => {
     const searchLower = searchTerm.toLowerCase();
@@ -37,12 +38,40 @@ export const ComponentSelector = ({
 
   const handleClear = () => {
     onClear();
-    setShowDropdown(true);
-    // Focus the input after clearing
+    setSearchTerm("");
+    setShowDropdown(false);
     setTimeout(() => {
       inputRef.current?.focus();
     }, 0);
   };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(document.activeElement)
+      ) {
+        setShowDropdown(false);
+        setSearchTerm("");
+      }
+    }, 100);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+        setSearchTerm("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Auto-focus when component is cleared
   useEffect(() => {
@@ -52,7 +81,7 @@ export const ComponentSelector = ({
   }, [selectedComponent]);
 
   return (
-    <div className="component-selector">
+    <div className="component-selector" ref={containerRef}>
       <h3>{category}</h3>
       {selectedComponent ? (
         <div className="selected-component">
@@ -81,7 +110,7 @@ export const ComponentSelector = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onFocus={() => setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+            onBlur={handleBlur}
           />
           {showDropdown && searchTerm && (
             <div className="dropdown-list">

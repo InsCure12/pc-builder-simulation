@@ -267,6 +267,11 @@
   z-index: 10;
 }
 
+.component-selector:focus-within {
+  z-index: 1000 !important;
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
 .component-selector h3 {
   margin: 0 0 1rem 0;
   color: #ffffff;
