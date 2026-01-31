@@ -7,13 +7,41 @@ import {
   createElement,
   useMemo,
   useCallback,
+  type ElementType,
+  type ComponentPropsWithoutRef,
 } from "react";
 import { gsap } from "gsap";
 import "./TextType.css";
 
-const TextType = ({
+type VariableSpeed = {
+  min: number;
+  max: number;
+};
+
+type TextTypeProps<T extends ElementType = "div"> = {
+  text: string | string[];
+  as?: T;
+  typingSpeed?: number;
+  initialDelay?: number;
+  pauseDuration?: number;
+  deletingSpeed?: number;
+  loop?: boolean;
+  className?: string;
+  showCursor?: boolean;
+  hideCursorWhileTyping?: boolean;
+  cursorCharacter?: string;
+  cursorClassName?: string;
+  cursorBlinkDuration?: number;
+  textColors?: string[];
+  variableSpeed?: VariableSpeed;
+  onSentenceComplete?: (sentence: string, index: number) => void;
+  startOnVisible?: boolean;
+  reverseMode?: boolean;
+} & Omit<ComponentPropsWithoutRef<T>, "as" | "children">;
+
+const TextType = <T extends ElementType = "div">({
   text,
-  as: Component = "div",
+  as: Component = "div" as T,
   typingSpeed = 50,
   initialDelay = 0,
   pauseDuration = 2000,
@@ -31,14 +59,14 @@ const TextType = ({
   startOnVisible = false,
   reverseMode = false,
   ...props
-}) => {
+}: TextTypeProps<T>) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(!startOnVisible);
-  const cursorRef = useRef(null);
-  const containerRef = useRef(null);
+  const cursorRef = useRef<HTMLSpanElement | null>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
 
   const textArray = useMemo(
     () => (Array.isArray(text) ? text : [text]),
@@ -90,7 +118,7 @@ const TextType = ({
   useEffect(() => {
     if (!isVisible) return;
 
-    let timeout;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     const currentText = textArray[currentTextIndex];
     const processedText = reverseMode
       ? currentText.split("").reverse().join("")
@@ -142,7 +170,9 @@ const TextType = ({
       executeTypingAnimation();
     }
 
-    return () => clearTimeout(timeout);
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentCharIndex,

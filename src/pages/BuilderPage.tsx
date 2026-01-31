@@ -68,17 +68,8 @@ export const BuilderPage = () => {
               pauseDuration={1500}
               showCursor
               cursorCharacter="_"
-              texts={[
-                "Welcome to PC Builder! Start your custom build!",
-                "Choose components and build your dream PC!",
-              ]}
               deletingSpeed={50}
-              variableSpeedEnabled={false}
-              variableSpeedMin={60}
-              variableSpeedMax={120}
               cursorBlinkDuration={0.5}
-              variableSpeed={undefined}
-              onSentenceComplete={undefined}
             />
           </h1>
           <p>
@@ -104,8 +95,8 @@ export const BuilderPage = () => {
       </section>
 
       <section className="brands-section">
-        <ScrollVelocity 
-          velocity={50} 
+        <ScrollVelocity
+          velocity={50}
           className="brand-scroll"
           scrollContainerRef={scrollContainerRef}
           parallaxStyle={{}}
